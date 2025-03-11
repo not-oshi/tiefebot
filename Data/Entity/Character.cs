@@ -3,7 +3,7 @@
 public class Character
 {
     public Guid Id { get; set; }
-    public ulong PlayerDiscordId { get; set; }
+    public ulong MemberDiscordId { get; set; }
     public string Name { get; set; }
     //public string Type { get; set; } //Gestalt or Replika
     //public int Level { get; set; } //Story-tale Level
@@ -15,5 +15,5 @@ public class Character
     //public int Combat { get; set; }
     //public int Dexterity { get; set; }
     
-    public CharacterInventory CharacterInventory { get; set; }
+    public Inventory Inventory { get; set; }
 }

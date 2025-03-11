@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Xml.Schema;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using tiefebot.Data.Entity;
 
@@ -7,15 +8,15 @@ namespace tiefebot.Data;
 public class DataBase : DbContext
 {
     public DbSet<Character> Characters { get; set; }
-    public DbSet<CharacterInventory> CharacterInventories { get; set; }
+    public DbSet<Inventory> Inventories { get; set; }
+    public DbSet<InvItem> InvItems { get; set; }
     public DbSet<Item> Items { get; set; }
-    public DbSet<noeItem> noeItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CharacterConfiguration());
-        modelBuilder.ApplyConfiguration(new CharacterInventoryConfiguration());
-        modelBuilder.ApplyConfiguration(new ItemConfiguration());
+        modelBuilder.ApplyConfiguration(new InventoryConfiguration());
+        modelBuilder.ApplyConfiguration(new InvItemConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 
@@ -28,33 +29,33 @@ public class CharacterConfiguration : IEntityTypeConfiguration<Character>
     public void Configure(EntityTypeBuilder<Character> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.HasOne(x => x.CharacterInventory)
+        builder.HasOne(x => x.Inventory)
             .WithOne(x => x.Character)
-            .HasForeignKey<CharacterInventory>(x => x.CharacterId);
+            .HasForeignKey<Inventory>(x => x.CharacterId);
     }
 }
 
-public class CharacterInventoryConfiguration : IEntityTypeConfiguration<CharacterInventory>
+public class InventoryConfiguration : IEntityTypeConfiguration<Inventory>
 {
-    public void Configure(EntityTypeBuilder<CharacterInventory> builder)
+    public void Configure(EntityTypeBuilder<Inventory> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.HasOne(x => x.Character)
-            .WithOne(x => x.CharacterInventory)
-            .HasForeignKey<CharacterInventory>(x => x.CharacterId);
-        builder.HasMany(x => x.Items)
-            .WithOne(x => x.CharacterInventory)
-            .HasForeignKey(x => x.CharacterInventoryId);
+        builder.HasMany(x => x.InvItems)
+            .WithOne(x => x.Inventory)
+            .HasForeignKey(x => x.InventoryId);
     }
 }
 
-public class ItemConfiguration : IEntityTypeConfiguration<Item>
+public class InvItemConfiguration : IEntityTypeConfiguration<InvItem>
 {
-    public void Configure(EntityTypeBuilder<Item> builder)
+    public void Configure(EntityTypeBuilder<InvItem> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.HasOne(x => x.CharacterInventory)
-            .WithMany(x => x.Items)
-            .HasForeignKey(x => x.CharacterInventoryId);
+        builder.HasKey(xx => new{xx.InventoryId, xx.ItemId});
+        builder.HasOne(x => x.Inventory)
+            .WithMany(x => x.InvItems)
+            .HasForeignKey(x => x.InventoryId);
+        builder.HasOne(x => x.Item)
+            .WithMany(x => x.InvItems)
+            .HasForeignKey(x => x.ItemId);
     }
 }
