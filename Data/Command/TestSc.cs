@@ -4,11 +4,43 @@ using DSharpPlus.SlashCommands;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using tiefebot.Data.Entity;
+using tiefebot.Data.Function;
 
 namespace tiefebot.Data.Command;
 
 public class TestSc : ApplicationCommandModule
 {
+    
+    [SlashCommand("whoareyou", "Will Send a full name of this Replica")]
+    public async Task WhoAreYou(InteractionContext ctx)
+    {
+        await ctx.Interaction.CreateResponseAsync
+        (InteractionResponseType.ChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder()
+                .WithContent("Ich bin Verwaltung-, Interaktion-, Daten-Replica"));
+
+    }
+    
+    [SlashCommand("checktest", "1")]
+    public async Task checktest(InteractionContext ctx,
+        [Autocomplete(typeof(CharacterCheck)), Option("test", "test", true)] string id)
+    {
+        await ctx.Interaction.CreateResponseAsync
+        (InteractionResponseType.ChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder()
+                .WithContent("showing"));
+
+    }
+    
+    [SlashCommand("dice_test", "Check dice system")]
+    public async Task CheckTest(InteractionContext ctx,
+        [Option("Stat_Num", "Just a test")] long num)
+    {
+        await ctx.DeferAsync();
+        DiscordEmbed embed = await DiceCheck.CheckDice(num);
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+    }    
+    
     [SlashCommand("test", "test command")]
     public async Task Test(InteractionContext ctx)
     {
