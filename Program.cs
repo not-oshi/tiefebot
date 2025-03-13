@@ -1,10 +1,8 @@
-﻿using System.Xml;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
-using Microsoft.EntityFrameworkCore;
-using tiefebot.Data;
 using tiefebot.Data.Command;
+using tiefebot.Data.Function;
 
 namespace tiefebot;
 
@@ -27,11 +25,14 @@ class Program
         var slashCommandsConfiguration = Client.UseSlashCommands();
         slashCommandsConfiguration.RegisterCommands<TestSc>();
         
+        SchedulerService schedulerService = new SchedulerService();
+        await schedulerService.StartScheduler();
+        
         
         await Client.ConnectAsync();
         await Task.Delay(-1);
     }
-    
+
     private static Task OnClientReady(DiscordClient sender, ReadyEventArgs args)
     {
         return Task.CompletedTask;
