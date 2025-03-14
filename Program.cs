@@ -32,6 +32,8 @@ class Program
         await Client.ConnectAsync();
         await Task.Delay(-1);
     }
+    
+    
 
     private static Task OnClientReady(DiscordClient sender, ReadyEventArgs args)
     {
