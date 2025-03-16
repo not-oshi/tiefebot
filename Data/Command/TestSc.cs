@@ -41,44 +41,6 @@ public class TestSc : ApplicationCommandModule
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
     
-    [SlashCommand("test", "test command")]
-    public async Task Test(InteractionContext ctx)
-    {
-
-        await using DataBase db = new DataBase();
-        var tryCharacter = db.Characters.FirstOrDefault(x => x.MemberDiscordId == ctx.User.Id);
-
-        if (tryCharacter == null)
-        {
-            //Creating Character
-            Character character = new()
-            { 
-                MemberDiscordId = ctx.User.Id,
-                Name = "Test",
-            };
-        
-            await db.Characters.AddAsync(character);
-            await db.SaveChangesAsync();
-        
-            //Creating Inventory for Character
-            Inventory inventory = new()
-            {
-                CharacterId = character.Id,
-            };
-            
-            await db.Inventories.AddAsync(inventory);
-            await db.SaveChangesAsync();
-        }
-        else
-        {
-            await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder().WithContent("Already exists"));
-            return;
-        }
-        
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().WithContent("Done"));
-    }
     
     [SlashCommand("test2", "test command")]
     public async Task Test2(InteractionContext ctx)

@@ -4,12 +4,27 @@ namespace tiefebot.Data;
 
 public class Enums
 {
-    //To use this - [Option("Character_type", "Gestalt or Replica?")] Enums.CharType charType
     public enum CharType
     {
         [ChoiceName("Gestalt")]
         Gestalt,
-        [ChoiceName("Replica")]
-        Replica
+        [ChoiceName("Replika")]
+        Replika
+    }
+    
+    public enum Stats
+    {
+        [ChoiceName("Personality")]
+        Personality,
+        [ChoiceName("Empathy")]
+        Empathy,
+        [ChoiceName("Inteligent")]
+        Inteligent,
+        [ChoiceName("Armor")]
+        Armor,
+        [ChoiceName("Combat")]
+        Combat,
+        [ChoiceName("Dexterity")]
+        Dexterity
     }
 }
