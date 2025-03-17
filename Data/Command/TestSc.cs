@@ -20,10 +20,52 @@ public class TestSc : ApplicationCommandModule
                 .WithContent("Ich bin Verwaltung-, Interaktion-, Daten-Replica"));
 
     }
+
+    [SlashCommand("Get_Item", "A command to get an items")]
+    public async Task GetItem(InteractionContext ctx,
+        [Autocomplete(typeof(ItemsCheck)), 
+         Option("Item", "Chose the Item", true)] string choosedItem)
+    {
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        
+        await using DataBase db = new DataBase();
+        
+        // Searching Player Character
+        var character = await db.Characters
+            .Include(x => x.Inventory)
+            .ThenInclude(x => x.InvItems)
+            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
+        
+        if (character == null) 
+        {
+            await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder()
+                    .WithContent("Character not found").AsEphemeral(true));
+            return;
+        }
+        
+        // Searching available items
+        var item = await db.Items.FirstOrDefaultAsync(x => x.Name == choosedItem);
+        
+        // Searching InventoryItem
+        var inventoryItem = character.Inventory.InvItems
+            .FirstOrDefault(x => x.ItemId == item.Id);
+        
+        // need to finish this
+        
+        
+        
+        
+        
+        
+        
+    }
+    
     
     [SlashCommand("checktest", "1")]
     public async Task checktest(InteractionContext ctx,
-        [Autocomplete(typeof(CharacterCheck)), Option("test", "test", true)] string id)
+        [Autocomplete(typeof(CharactersCheck)), Option("test", "test", true)] string id)
     {
         await ctx.Interaction.CreateResponseAsync
         (InteractionResponseType.ChannelMessageWithSource,
@@ -40,25 +82,6 @@ public class TestSc : ApplicationCommandModule
         DiscordEmbed embed = await DiceCheck.CheckDice(num);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
-    
-    
-    [SlashCommand("test2", "test command")]
-    public async Task Test2(InteractionContext ctx)
-    {
-
-        await using DataBase db = new DataBase();
-
-        Item item = new()
-        {
-            Name = "TestItem"
-        };
-        
-        await db.Items.AddAsync(item);
-        await db.SaveChangesAsync();
-        
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().WithContent("Done"));
-    }
     
     [SlashCommand("test3", "test command")]
     public async Task Test3(InteractionContext ctx)

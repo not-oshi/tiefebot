@@ -11,6 +11,20 @@ public class Enums
         [ChoiceName("Replika")]
         Replika
     }
+
+    public enum ItemType
+    {
+        [ChoiceName("Tool")]
+        Tool,
+        [ChoiceName("Weapon")]
+        Weapon,
+        [ChoiceName("Ammo")]
+        Ammo,
+        [ChoiceName("Defence")]
+        Defence,
+        [ChoiceName("Medication")]
+        Medication
+    }
     
     public enum Stats
     {

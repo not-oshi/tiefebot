@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.CompilerServices;
 using tiefebot.Data.Entity;
 
 namespace tiefebot.Data.Command;
@@ -18,7 +19,7 @@ public class AdminSc
         [Option("Level", "Story-Tale level")] long level,
         [Option("Personality", ".")] long personality,
         [Option("Empathy", ".")] long empathy,
-        [Option("Inteligent", ".")] long inteligent,
+        [Option("Intelligent", ".")] long intelligent,
         [Option("Armor", "tip: Gestalt can't have more than 2 points")] long armor,
         [Option("Combat", ".")] long combat,
         [Option("Dexterity", ".")] long dexterity)
@@ -29,10 +30,10 @@ public class AdminSc
         // Retrieve character data from the database
         await using DataBase db = new DataBase();
         var tryCharacter = await db.Characters
-            .FirstAsync(x => x.MemberDiscordId == ctx.User.Id);
+            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
         
         // Check if the character already exists
-        if (tryCharacter.MemberDiscordId == ctx.User.Id)
+        if (tryCharacter.MemberDiscordId == null)
         {
             await ctx.Interaction.CreateResponseAsync(
                 InteractionResponseType.ChannelMessageWithSource,
@@ -41,17 +42,18 @@ public class AdminSc
                     .AsEphemeral(true));
             return;
         }
+        
 
         // Create a new character
         Character character = new()
         { 
             MemberDiscordId = ctx.User.Id,
             Name = charName,
-            Type = charType.ToString(),
+            Type = charType,
             Level = (int)level,
             Personality = (int)personality,
             Empathy = (int)empathy,
-            Inteligent = (int)inteligent,
+            Intelligent = (int)intelligent,
             Armor = (int)armor,
             Combat = (int)combat,
             Dexterity = (int)dexterity
@@ -75,7 +77,13 @@ public class AdminSc
     
     [SlashCommand("New_Item", "Creates a new Item - Attention! Misspellings are not allowed.")]
     [SlashRequireOwner]
-    public async Task NewItem(InteractionContext ctx)
+    public async Task NewItem(InteractionContext ctx,
+        [Option("Name", "The name of the Item")] string itemName,
+        [Option("Item_Type", "")] Enums.ItemType itemType,
+        [Option("Description", "Item description")] string itemDesc,
+        [Option("Damage_n_Heal", "Damage or recovery points")] long itemDNH,
+        [Option("Protection", "Item protection points")] long itemProtection,
+        [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack)
     {
         // Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
@@ -85,7 +93,12 @@ public class AdminSc
         // Create a new Item
         Item item = new()
         {
-            Name = "TestItem"
+            Name = itemName,
+            Type = itemType,
+            Description = itemDesc,
+            DNH = (int)itemDNH,
+            Protection = (int)itemProtection,
+            MaxStack = (int)itemMaxStack
         };
         
         await db.Items.AddAsync(item);
