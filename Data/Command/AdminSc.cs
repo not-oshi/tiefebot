@@ -15,7 +15,7 @@ public class AdminSc : ApplicationCommandModule
     [SlashRequireOwner]
     public async Task NewCharacter(InteractionContext ctx,
         [Option("Character", "The name of the Character.")] string charName,
-        //[Option("Character_type", "Gestalt or Replika?")] Enums.CharType charType,
+        [Option("Character_type", "Gestalt or Replika?")] Enums.CharType charType,
         [Option("Level", "Story-Tale level")] long level,
         [Option("Personality", ".")] long personality,
         [Option("Empathy", ".")] long empathy,
@@ -24,32 +24,29 @@ public class AdminSc : ApplicationCommandModule
         [Option("Combat", ".")] long combat,
         [Option("Dexterity", ".")] long dexterity)
     {
-        // Making delay
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
-
+        //Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
+        
         // Retrieve character data from the database
         await using DataBase db = new DataBase();
         var tryCharacter = await db.Characters
             .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
         
         // Check if the character already exists
-        if (tryCharacter.MemberDiscordId == null)
+        if (tryCharacter != null)
         {
-            await ctx.Interaction.CreateResponseAsync(
-                InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder()
-                    .WithContent("Character already exists")
-                    .AsEphemeral(true));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .WithContent("Character already exists"));
             return;
         }
         
-
         // Create a new character
         Character character = new()
         { 
             MemberDiscordId = ctx.User.Id,
             Name = charName,
-            Type = "1",
+            Type = charType,
             Level = (int)level,
             Personality = (int)personality,
             Empathy = (int)empathy,
@@ -70,23 +67,23 @@ public class AdminSc : ApplicationCommandModule
         await db.SaveChangesAsync();
 
         // Confirm the Character creation
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder()
-                .WithContent("Creating done").AsEphemeral(true));
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent("Creating done"));
     }
     
     [SlashCommand("New_Item", "Creates a new Item - Attention! Misspellings are not allowed.")]
     [SlashRequireOwner]
     public async Task NewItem(InteractionContext ctx,
         [Option("Name", "The name of the Item")] string itemName,
-        //[Option("Item_Type", "")] Enums.ItemType itemType,
+        [Option("Item_Type", ".")] Enums.ItemType itemType,
         [Option("Description", "Item description")] string itemDesc,
         [Option("Damage_n_Heal", "Damage or recovery points")] long itemDNH,
         [Option("Protection", "Item protection points")] long itemProtection,
         [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack)
     {
-        // Making delay
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        //Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
         
         await using DataBase db = new DataBase();
         
@@ -94,7 +91,7 @@ public class AdminSc : ApplicationCommandModule
         Item item = new()
         {
             Name = itemName,
-            //Type = itemType,
+            Type = itemType,
             Description = itemDesc,
             DNH = (int)itemDNH,
             Protection = (int)itemProtection,
@@ -104,9 +101,8 @@ public class AdminSc : ApplicationCommandModule
         await db.Items.AddAsync(item);
         await db.SaveChangesAsync();
         
-        // Confirm the Item creation
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder()
-                .WithContent("Creating done").AsEphemeral(true));
+        // Confirming
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent("Creating done"));
     }
 }

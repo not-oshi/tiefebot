@@ -21,7 +21,10 @@ public class DataBase : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlite("Data Source=tiefebot.db");
+    {
+        optionsBuilder.UseSqlite("Data Source=tiefebot.db");
+        optionsBuilder.LogTo(Console.WriteLine);
+    }
 }
 
 public class CharacterConfiguration : IEntityTypeConfiguration<Character>

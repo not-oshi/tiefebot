@@ -13,7 +13,7 @@ public class InvItemsCheck : IAutocompleteProvider
         var character = await db.Characters
             .Include(x => x.Inventory)
             .ThenInclude(x => x.InvItems).ThenInclude(invItem => invItem.Item)
-            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
+            .FirstAsync(x => x.MemberDiscordId == ctx.User.Id);
 
         var invItems = character.Inventory.InvItems
             .Select(x => new DiscordAutoCompleteChoice(x.Item.Name.ToString(), x.Item.Name.ToString()))

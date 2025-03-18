@@ -7,9 +7,8 @@ public class Character
     public Guid Id { get; set; }
     public ulong MemberDiscordId { get; set; }
     public string Name { get; set; }
-    public string Type { get; set; }
+    public Enums.CharType Type { get; set; }
     public int Level { get; set; } //Story-tale Level
-    
     public int Personality { get; set; }
     public int Empathy { get; set; }
     public int Intelligent { get; set; }

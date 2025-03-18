@@ -7,11 +7,9 @@ public class Enums
     public enum CharType
     {
         [ChoiceName("Gestalt")]
-        //Gestalt,
-        Option1,
+        Gestalt,
         [ChoiceName("Replika")]
-        //Replika
-        Option2
+        Replika
     }
 
     public enum ItemType

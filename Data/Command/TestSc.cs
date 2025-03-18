@@ -18,7 +18,6 @@ public class TestSc : ApplicationCommandModule
         (InteractionResponseType.ChannelMessageWithSource,
             new DiscordInteractionResponseBuilder()
                 .WithContent("Ich bin Verwaltung-, Interaktion-, Daten-Replica"));
-
     }
 
     [SlashCommand("Get_Item", "A command to get the items")]
@@ -27,7 +26,8 @@ public class TestSc : ApplicationCommandModule
          Option("Item", "Chose the Item", true)] string choosedItem)
     {
         // Making delay
-        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
         
         await using DataBase db = new DataBase();
         
@@ -37,11 +37,10 @@ public class TestSc : ApplicationCommandModule
             .ThenInclude(x => x.InvItems)
             .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
         
-        if (character == null) 
+        if (character.MemberDiscordId == null) 
         {
-            await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder()
-                    .WithContent("Character not found").AsEphemeral(true));
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .WithContent("Character not found"));
             return;
         }
         
@@ -51,6 +50,17 @@ public class TestSc : ApplicationCommandModule
         // Searching InventoryItem
         var inventoryItem = character.Inventory.InvItems
             .FirstOrDefault(x => x.ItemId == item.Id);
+        
+        if (inventoryItem != null) 
+        {
+            var inventoryCounts = inventoryItem.Inventory.InvItems.Count;
+            if (inventoryCounts >= 6)
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("Rule of six!"));
+                return;
+            }
+        }
         
         if (inventoryItem == null)
         {
@@ -69,16 +79,18 @@ public class TestSc : ApplicationCommandModule
             // Increase the quantity if the item already exists
             if (inventoryItem.Quantity < item.MaxStack)
                 inventoryItem.Quantity += 1;
-            else await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder()
-                    .WithContent("You can't carry any more").AsEphemeral(true));
+            else
+            {
+                await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                    .WithContent("You can't carry any more"));
+                return;
+            }
         }
         
         await db.SaveChangesAsync();
         
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder()
-                .WithContent("You got the item").AsEphemeral(true));
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent("You got the item"));
     }
 
     [SlashCommand("Use_Item", "A command to use the Items")]
