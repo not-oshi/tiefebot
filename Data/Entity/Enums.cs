@@ -7,9 +7,11 @@ public class Enums
     public enum CharType
     {
         [ChoiceName("Gestalt")]
-        Gestalt,
+        //Gestalt,
+        Option1,
         [ChoiceName("Replika")]
-        Replika
+        //Replika
+        Option2
     }
 
     public enum ItemType
@@ -32,8 +34,8 @@ public class Enums
         Personality,
         [ChoiceName("Empathy")]
         Empathy,
-        [ChoiceName("Inteligent")]
-        Inteligent,
+        [ChoiceName("Intelligent")]
+        Intelligent,
         [ChoiceName("Armor")]
         Armor,
         [ChoiceName("Combat")]

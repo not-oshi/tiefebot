@@ -9,13 +9,13 @@ using tiefebot.Data.Entity;
 
 namespace tiefebot.Data.Command;
 
-public class AdminSc
+public class AdminSc : ApplicationCommandModule
 {
     [SlashCommand("New_Character", "Creates a new character - Attention! Misspellings are not allowed.")]
     [SlashRequireOwner]
     public async Task NewCharacter(InteractionContext ctx,
         [Option("Character", "The name of the Character.")] string charName,
-        [Option("Character_type", "Gestalt or Replika?")] Enums.CharType charType,
+        //[Option("Character_type", "Gestalt or Replika?")] Enums.CharType charType,
         [Option("Level", "Story-Tale level")] long level,
         [Option("Personality", ".")] long personality,
         [Option("Empathy", ".")] long empathy,
@@ -49,7 +49,7 @@ public class AdminSc
         { 
             MemberDiscordId = ctx.User.Id,
             Name = charName,
-            Type = charType,
+            Type = "1",
             Level = (int)level,
             Personality = (int)personality,
             Empathy = (int)empathy,
@@ -79,7 +79,7 @@ public class AdminSc
     [SlashRequireOwner]
     public async Task NewItem(InteractionContext ctx,
         [Option("Name", "The name of the Item")] string itemName,
-        [Option("Item_Type", "")] Enums.ItemType itemType,
+        //[Option("Item_Type", "")] Enums.ItemType itemType,
         [Option("Description", "Item description")] string itemDesc,
         [Option("Damage_n_Heal", "Damage or recovery points")] long itemDNH,
         [Option("Protection", "Item protection points")] long itemProtection,
@@ -94,7 +94,7 @@ public class AdminSc
         Item item = new()
         {
             Name = itemName,
-            Type = itemType,
+            //Type = itemType,
             Description = itemDesc,
             DNH = (int)itemDNH,
             Protection = (int)itemProtection,

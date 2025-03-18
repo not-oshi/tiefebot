@@ -21,7 +21,7 @@ public class TestSc : ApplicationCommandModule
 
     }
 
-    [SlashCommand("Get_Item", "A command to get an items")]
+    [SlashCommand("Get_Item", "A command to get the items")]
     public async Task GetItem(InteractionContext ctx,
         [Autocomplete(typeof(ItemsCheck)), 
          Option("Item", "Chose the Item", true)] string choosedItem)
@@ -45,27 +45,53 @@ public class TestSc : ApplicationCommandModule
             return;
         }
         
-        // Searching available items
+        // Searching choosed item
         var item = await db.Items.FirstOrDefaultAsync(x => x.Name == choosedItem);
         
         // Searching InventoryItem
         var inventoryItem = character.Inventory.InvItems
             .FirstOrDefault(x => x.ItemId == item.Id);
         
-        // need to finish this
+        if (inventoryItem == null)
+        {
+            // Add item if it not exist in inventory
+            var newInvItem = new InvItem
+            {
+                InventoryId = character.Inventory.Id,
+                ItemId = item.Id,
+                
+                Quantity = 1
+            };
+            db.InvItems.Add(newInvItem);
+        }
+        else
+        {
+            // Increase the quantity if the item already exists
+            if (inventoryItem.Quantity < item.MaxStack)
+                inventoryItem.Quantity += 1;
+            else await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                new DiscordInteractionResponseBuilder()
+                    .WithContent("You can't carry any more").AsEphemeral(true));
+        }
         
+        await db.SaveChangesAsync();
         
-        
-        
-        
-        
+        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+            new DiscordInteractionResponseBuilder()
+                .WithContent("You got the item").AsEphemeral(true));
+    }
+
+    [SlashCommand("Use_Item", "A command to use the Items")]
+    public async Task UseItem(InteractionContext ctx,
+        [Autocomplete(typeof(InvItemsCheck)), Option("Invetory_Item", "Select the item you want to use", true)] string itemName)
+    {
         
     }
     
     
     [SlashCommand("checktest", "1")]
     public async Task checktest(InteractionContext ctx,
-        [Autocomplete(typeof(CharactersCheck)), Option("test", "test", true)] string id)
+        [Autocomplete(typeof(CharactersCheck)), Option("test", "test", true)] string charName)
     {
         await ctx.Interaction.CreateResponseAsync
         (InteractionResponseType.ChannelMessageWithSource,
@@ -82,56 +108,4 @@ public class TestSc : ApplicationCommandModule
         DiscordEmbed embed = await DiceCheck.CheckDice(num);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
-    
-    [SlashCommand("test3", "test command")]
-    public async Task Test3(InteractionContext ctx)
-    {
-
-        await using DataBase db = new DataBase();
-
-        var character = await db.Characters
-            .Include(x => x.Inventory)
-                .ThenInclude(x => x.InvItems)
-            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
-        
-        if (character == null)
-        {
-            Console.WriteLine("Игрок не найден!");
-            return;
-        }
-
-        var item = await db.Items.FirstOrDefaultAsync(x => x.Name == "TestItem");
-        
-        if (item == null)
-        {
-            Console.WriteLine("Предмет не найден!");
-            return;
-        }
-        
-        var inventoryItem = character.Inventory.InvItems
-            .FirstOrDefault(x => x.ItemId == item.Id);
-        
-        if (inventoryItem != null)
-        {
-            // Увеличить количество, если предмет уже есть
-            inventoryItem.Quantity += 1;
-        }
-        else
-        {
-            // Добавить новый предмет
-            var newInvItem = new InvItem
-            {
-                InventoryId = character.Inventory.Id,
-                ItemId = item.Id,
-                Quantity = 1 //for test
-            };
-
-            db.InvItems.Add(newInvItem);
-        }
-        
-        await db.SaveChangesAsync();
-        
-        await ctx.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder().WithContent("Done"));
-    }
 }

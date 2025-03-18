@@ -24,6 +24,7 @@ class Program
 
         var slashCommandsConfiguration = Client.UseSlashCommands();
         slashCommandsConfiguration.RegisterCommands<TestSc>();
+        slashCommandsConfiguration.RegisterCommands<AdminSc>();
         
         SchedulerService schedulerService = new SchedulerService();
         await schedulerService.StartScheduler();
