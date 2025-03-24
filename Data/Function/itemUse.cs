@@ -17,39 +17,26 @@ public class itemUse
             .SelectMany(x => x.Inventory.InvItems)
             .Include(invItem => invItem.Item)
             .FirstAsync(x => x.Item.Name == itemName);
-
-        switch (invItem.Item.Type)
-        {
-            case Enums.ItemType.Tool:
-                embed = new DiscordEmbedBuilder
-                {
-                    Color = new Optional<DiscordColor>(961515),
-                    Title = invItem.Item.Name,
-                    Description = invItem.Item.Description,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                    {
-                        Url = "https://i.imgur.com/AfFp7pu.png"
-                    }
-                };
-                break;
-            case Enums.ItemType.Weapon:
-                embed = new DiscordEmbedBuilder
-                {
-                    Color = new Optional<DiscordColor>(961515),
-                    Title = invItem.Item.Name,
-                    Description = invItem.Item.Description,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                    {
-                        Url = "https://i.imgur.com/AfFp7pu.png"
-                    },
-                };
-                embed.AddField("Damage", $"{invItem.Item.DNH}", inline: true);
-                embed.AddField("Rate Of Fire", $"{invItem.Item.ROF}", inline: true);
-                break;
-        }
         
-        return NotImplementedException;
+        embed = new DiscordEmbedBuilder
+        {
+            Color = new Optional<DiscordColor>(961515),
+            Title = invItem.Item.Name,
+            Description = invItem.Item.Description,
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+            {
+                Url = "https://i.imgur.com/AfFp7pu.png"
+            },
+        };
+        embed.AddField
+        ("", 
+            $"Damage \nRate Of Fire",
+            inline: true);
+        
+        embed.AddField
+        ("", 
+            $"{invItem.Item.Damage} \n{invItem.Item.ROF}", 
+            inline: true);
+        return null;
     }
-
-    public static DiscordEmbed NotImplementedException { get; set; }
 }
