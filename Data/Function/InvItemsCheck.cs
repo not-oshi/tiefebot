@@ -10,15 +10,12 @@ public class InvItemsCheck : IAutocompleteProvider
     {
         await using DataBase db = new DataBase();
         
-        var character = await db.Characters
-            .Include(x => x.Inventory)
-            .ThenInclude(x => x.InvItems).ThenInclude(invItem => invItem.Item)
-            .FirstAsync(x => x.MemberDiscordId == ctx.User.Id);
-
-        var invItems = character.Inventory.InvItems
-            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name.ToString(), x.Item.Name.ToString()))
+        var invItems = db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.Item.Name))
             .ToList();
-        
+
         return invItems;
     }
 }

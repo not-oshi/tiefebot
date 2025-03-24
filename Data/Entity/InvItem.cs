@@ -7,5 +7,7 @@ public class InvItem
     
     public Guid ItemId { get; set; }
     public Item Item { get; set; }
+    public int Ammunition { get; set; }
+    public int Durability { get; set; }
     public int Quantity { get; set; }
 }

@@ -82,7 +82,7 @@ public class TestSc : ApplicationCommandModule
             else
             {
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder()
-                    .WithContent("You can't carry any more"));
+                    .WithContent("You can't  carry any more"));
                 return;
             }
         }
@@ -95,10 +95,14 @@ public class TestSc : ApplicationCommandModule
 
     [SlashCommand("Use_Item", "A command to use the Items")]
     public async Task UseItem(InteractionContext ctx,
-        [Autocomplete(typeof(InvItemsCheck)), Option("Invetory_Item", "Select the item you want to use", true)] string itemName)
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
     {
         
+
+        
     }
+    
+    
     
     
     [SlashCommand("checktest", "1")]
