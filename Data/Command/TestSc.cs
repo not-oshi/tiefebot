@@ -97,16 +97,31 @@ public class TestSc : ApplicationCommandModule
     public async Task UseItem(InteractionContext ctx,
         [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
     {
+        //Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder());
         
+        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemName, false);
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .AddEmbed(embed));
+    }
 
-        
+    [SlashCommand("Inspect_Item", "A command to inspect Items")]
+    public async Task InspectItem(InteractionContext ctx,
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
+    {
+        //Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
+
+        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemName, true);
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .AddEmbed(embed));
     }
     
     
-    
-    
     [SlashCommand("checktest", "1")]
-    public async Task checktest(InteractionContext ctx,
+    public async Task Checktest(InteractionContext ctx,
         [Autocomplete(typeof(CharactersCheck)), Option("test", "test", true)] string charName)
     {
         await ctx.Interaction.CreateResponseAsync
@@ -121,7 +136,7 @@ public class TestSc : ApplicationCommandModule
         [Option("Stat_Num", "Just a test")] long num)
     {
         await ctx.DeferAsync();
-        DiscordEmbed embed = await DiceCheck.CheckDice(num);
+        var embed = await DiceCheck.CheckDice(num);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
 }

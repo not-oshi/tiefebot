@@ -11,6 +11,7 @@ public class Item
     public int ROF { get; set; } // Rate Of Fire
     public int Heal { get; set; }
     public int Protection { get; set; }
+    public int Capacity { get; set; } //For guns and magazines
     public int MaxStack { get; set; }
     public bool IsDisposable { get; set; }
     public ICollection<InvItem> InvItems { get; set; }

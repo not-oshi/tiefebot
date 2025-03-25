@@ -77,9 +77,13 @@ public class AdminSc : ApplicationCommandModule
         [Option("Name", "The name of the Item")] string itemName,
         [Option("Item_Type", ".")] Enums.ItemType itemType,
         [Option("Description", "Item description")] string itemDesc,
-        [Option("Damage_n_Heal", "Damage or recovery points")] long itemDNH,
+        [Option("Damage", "Damage points")] long itemDamage,
+        [Option("Rate_Of_Fire", "Rate of Fire")] long itemROF,
+        [Option("Heal", "Health points")] long itemHeal,
         [Option("Protection", "Item protection points")] long itemProtection,
-        [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack)
+        [Option("Capacity", "Item capacity")] long itemCapacity,
+        [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack,
+        [Option("Disposable", "Is the item disposable")] bool isDisposable)
     {
         //Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
@@ -93,9 +97,13 @@ public class AdminSc : ApplicationCommandModule
             Name = itemName,
             Type = itemType,
             Description = itemDesc,
-            DNH = (int)itemDNH,
+            Damage = (int)itemDamage,
+            ROF = (int)itemROF,
+            Heal = (int)itemHeal,
             Protection = (int)itemProtection,
-            MaxStack = (int)itemMaxStack
+            Capacity = (int)itemCapacity,
+            MaxStack = (int)itemMaxStack,
+            IsDisposable = isDisposable
         };
         
         await db.Items.AddAsync(item);
