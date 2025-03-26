@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Microsoft.EntityFrameworkCore;
+using tiefebot.Data.Entity;
 
 namespace tiefebot.Data.Function;
 
@@ -16,7 +17,16 @@ public static class ItemUseFunc
             .Include(invItem => invItem.Item)
             .FirstAsync(x => x.Item.Name == itemName);
         
-        var embed = new DiscordEmbedBuilder
+        var item = await db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Include(item => item.Item)
+            .Where(x => x.Item is Weapon)
+            .FirstAsync(x => x.Item.Name == itemName);
+
+        var weapon = item.Item as Weapon;
+        
+        var embed = new DiscordEmbedBuilder 
         {
             Color = new DiscordColor(0x961515),
             Title = invItem.Item.Name,
@@ -27,14 +37,14 @@ public static class ItemUseFunc
             },
             Footer = new DiscordEmbedBuilder.EmbedFooter()
             {
-                Text = invItem.Item.Type.GetName() + $" | Is Disposable - {invItem.Item.IsDisposable}"
+                Text = invItem.Item.ItemType.GetName() + $" | Is Disposable - {invItem.Item.IsDisposable}"
             }
         };
         embed.AddField
         ("Stats", 
             $"**Damage** - [{invItem.Item.Damage}]" +
             $"\n**Heal** - [{invItem.Item.Heal}]" +
-            $"\n**Rate Of Fire** - [{invItem.Item.ROF}]",
+            $"\n**Rate Of Fire** - [{weapon.ROF}]",
             inline: true);
         
         embed.AddField
@@ -44,7 +54,7 @@ public static class ItemUseFunc
             $"\n**Maximum quantity** - [{invItem.Item.MaxStack}]", 
             inline: true);
 
-        if (invItem.Item.Type == Enums.ItemType.Weapon | invItem.Item.Type == Enums.ItemType.Ammo)
+        if (invItem.Item.ItemType == Enums.ItemType.Weapon | invItem.Item.ItemType == Enums.ItemType.Ammo)
         {
             isLearnOnly = true;
         }

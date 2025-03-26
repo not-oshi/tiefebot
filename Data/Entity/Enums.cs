@@ -25,6 +25,11 @@ public class Enums
         [ChoiceName("Medication")]
         Medication
     }
+
+    public enum WeaponType
+    {
+        
+    }
     
     public enum Stats
     {

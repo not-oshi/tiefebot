@@ -17,6 +17,7 @@ public class DataBase : DbContext
         modelBuilder.ApplyConfiguration(new CharacterConfiguration());
         modelBuilder.ApplyConfiguration(new InventoryConfiguration());
         modelBuilder.ApplyConfiguration(new InvItemConfiguration());
+        modelBuilder.ApplyConfiguration(new ItemConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 
@@ -60,5 +61,14 @@ public class InvItemConfiguration : IEntityTypeConfiguration<InvItem>
         builder.HasOne(x => x.Item)
             .WithMany(x => x.InvItems)
             .HasForeignKey(x => x.ItemId);
+    }
+}
+
+public class ItemConfiguration : IEntityTypeConfiguration<Item>
+{
+    public void Configure(EntityTypeBuilder<Item> builder)
+    {
+        builder.HasDiscriminator<Enums.ItemType>(nameof(Item.ItemType));
+            
     }
 }

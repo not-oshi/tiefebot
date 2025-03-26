@@ -71,6 +71,43 @@ public class AdminSc : ApplicationCommandModule
             .WithContent("Creating done"));
     }
     
+    
+    [SlashCommandGroup("Create", "Create an item")]
+    public class CreateContainer : ApplicationCommandModule
+    {
+        [SlashCommand("Tool", "Create a Tool")]
+        [SlashRequireOwner]
+        public async Task CreateTool(InteractionContext ctx,
+            [Option("Name", "The name of the Item")] string itemName,
+            [Option("Item_Type", ".")] Enums.ItemType itemType,
+            [Option("Description", "Item description")] string itemDesc,
+            [Option("Usage", "What this tool is for")] string itemUsage,
+            [Option("Damage", "Damage points")] long itemDamage,
+            [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack,
+            [Option("Disposable", "Is the item disposable")] bool isDisposable
+            )
+        {
+            // Making delay
+            await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+                new DiscordInteractionResponseBuilder().AsEphemeral());
+            
+            // Creating a database connection
+            await using DataBase db = new DataBase();
+
+            var tool = new Tool()
+            {
+                Name = itemName,
+                ItemType = itemType,
+                Description = itemDesc,
+                Usage = itemUsage,
+                Damage = (int)itemDamage,
+                MaxStack = (int)itemMaxStack,
+                IsDisposable = isDisposable
+            };
+        }
+    }
+    
+    
     [SlashCommand("New_Item", "Creates a new Item - Attention! Misspellings are not allowed.")]
     [SlashRequireOwner]
     public async Task NewItem(InteractionContext ctx,
