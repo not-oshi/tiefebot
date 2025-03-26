@@ -25,12 +25,15 @@ public class Weapon : Item
 
 public class Ammo : Item
 {
+    public Enums.WeaponType WeaponType { get; set; }
     public int Capacity { get; set; } //For guns and magazines
+    public bool IsMagazine { get; set; }
 }
 
 public class Defence : Item
 {
     public int Protection { get; set; }
+    public bool IsWearable { get; set; } //TODO : need to add info in invitems
 }
 
 public class Medication : Item
