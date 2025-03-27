@@ -9,5 +9,6 @@ public class InvItem
     public Item Item { get; set; }
     public int Ammunition { get; set; }
     public int Durability { get; set; }
+    public bool IsEquipped { get; set; }
     public int Quantity { get; set; }
 }

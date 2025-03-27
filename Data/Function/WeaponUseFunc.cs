@@ -6,7 +6,7 @@ namespace tiefebot.Data.Function;
 
 public class WeaponUseFunc
 {
-    public static async Task<DiscordEmbed> ItemUseFuncTask(InteractionContext ctx, string weaponName)
+    public static async Task<DiscordEmbed> WeaponUseFuncTask(InteractionContext ctx, string weaponName)
     {
         await using DataBase db = new DataBase();
 
@@ -18,7 +18,7 @@ public class WeaponUseFunc
         
         
         
-        
-        return NotImplementedException;
+        //TODO : finish this
+        return null;
     }
 }

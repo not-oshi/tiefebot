@@ -6,6 +6,7 @@ using DSharpPlus.SlashCommands.Attributes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic.CompilerServices;
 using tiefebot.Data.Entity;
+using tiefebot.Data.Function;
 
 namespace tiefebot.Data.Command;
 
@@ -277,5 +278,28 @@ public class AdminSc : ApplicationCommandModule
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .WithContent("Creating done"));
         }
+    }
+
+    [SlashCommand("Delete_Item", "Creates a new character - Attention! Misspellings are not allowed.")]
+    [SlashRequireOwner]
+    public async Task DeleteItem(InteractionContext ctx,
+        [Autocomplete(typeof(ItemsCheck)), 
+         Option("Item", "Chose the Item", true)] string choosedItem)
+    {
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder());
+        
+        await using DataBase db = new DataBase();
+        
+        // Searching choosed item
+        var item = await db.Items.FirstOrDefaultAsync(x => x.Name == choosedItem);
+        
+        // Deleting and applying
+        db.Items.Remove(item);
+        await db.SaveChangesAsync();
+        
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent($"Deleting [{item.Name} is done]"));
     }
 }

@@ -60,7 +60,8 @@ public class InvItemConfiguration : IEntityTypeConfiguration<InvItem>
             .HasForeignKey(x => x.InventoryId);
         builder.HasOne(x => x.Item)
             .WithMany(x => x.InvItems)
-            .HasForeignKey(x => x.ItemId);
+            .HasForeignKey(x => x.ItemId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -68,7 +69,11 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
 {
     public void Configure(EntityTypeBuilder<Item> builder)
     {
-        builder.HasDiscriminator<Enums.ItemType>(nameof(Item.ItemType));
-            
+        builder.HasDiscriminator<Enums.ItemType>(nameof(Item.ItemType))
+            .HasValue<Tool>(Enums.ItemType.Tool)
+            .HasValue<Weapon>(Enums.ItemType.Weapon)
+            .HasValue<Ammo>(Enums.ItemType.Ammo)
+            .HasValue<Defence>(Enums.ItemType.Defence)
+            .HasValue<Medication>(Enums.ItemType.Medication);
     }
 }
