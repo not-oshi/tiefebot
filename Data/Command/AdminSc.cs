@@ -80,7 +80,6 @@ public class AdminSc : ApplicationCommandModule
         [SlashRequireOwner]
         public async Task CreateTool(InteractionContext ctx,
             [Option("Name", "The name of the Item")] string itemName,
-            [Option("Item_Type", ".")] Enums.ItemType itemType,
             [Option("Description", "Item description")] string itemDesc,
             [Option("Usage", "What this tool is for")] string itemUsage,
             [Option("Damage", "Damage points")] long itemDamage,
@@ -99,7 +98,7 @@ public class AdminSc : ApplicationCommandModule
             var tool = new Tool()
             {
                 Name = itemName,
-                ItemType = itemType,
+                ItemType = Enums.ItemType.Tool,
                 Description = itemDesc,
                 Usage = itemUsage,
                 Damage = (int)itemDamage,
@@ -119,7 +118,6 @@ public class AdminSc : ApplicationCommandModule
         [SlashRequireOwner]
         public async Task CreateWeapon(InteractionContext ctx, 
             [Option("Name", "The name of the Item")] string itemName,
-            [Option("Item_Type", ".")] Enums.ItemType itemType,
             [Option("Description", "Item description")] string itemDesc,
             [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemWeaponType,
             [Option("Damage", "Damage points")] long itemDamage,
@@ -139,7 +137,7 @@ public class AdminSc : ApplicationCommandModule
             var weapon = new Weapon()
             {
                 Name = itemName,
-                ItemType = itemType,
+                ItemType = Enums.ItemType.Weapon,
                 Description = itemDesc,
                 WeaponType = itemWeaponType,
                 Damage = (int)itemDamage,
@@ -160,9 +158,8 @@ public class AdminSc : ApplicationCommandModule
         [SlashRequireOwner]
         public async Task CreateAmmo(InteractionContext ctx, 
             [Option("Name", "The name of the Item")] string itemName,
-            [Option("Item_Type", ".")] Enums.ItemType itemType,
             [Option("Description", "Item description")] string itemDesc,
-            [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemWeaponType,
+            [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemAmmoType,
             [Option("Damage", "Damage points")] long itemDamage,
             [Option("Magazine", "Is the item is magazine?")] bool isMagazine,
             [Option("Capacity", "(For Magazines) How much ammo it can store?")] long itemCapacity,
@@ -181,9 +178,9 @@ public class AdminSc : ApplicationCommandModule
             var ammo = new Ammo()
             {
                 Name = itemName,
-                ItemType = itemType,
+                ItemType = Enums.ItemType.Ammo,
                 Description = itemDesc,
-                WeaponType = itemWeaponType,
+                AmmoType = itemAmmoType,
                 IsMagazine = isMagazine,
                 Capacity = (int)itemCapacity,
                 Damage = (int)itemDamage,
@@ -203,7 +200,6 @@ public class AdminSc : ApplicationCommandModule
         [SlashRequireOwner]
         public async Task CreateDefence(InteractionContext ctx, 
             [Option("Name", "The name of the Item")] string itemName,
-            [Option("Item_Type", ".")] Enums.ItemType itemType,
             [Option("Description", "Item description")] string itemDesc,
             [Option("Damage", "Damage points")] long itemDamage,
             [Option("Protection", "Protection points")] long itemProtection,
@@ -223,7 +219,7 @@ public class AdminSc : ApplicationCommandModule
             var defence = new Defence()
             {
                 Name = itemName,
-                ItemType = itemType,
+                ItemType = Enums.ItemType.Defence,
                 Description = itemDesc,
                 Protection = (int)itemProtection,
                 IsWearable = isWearable,
@@ -244,7 +240,6 @@ public class AdminSc : ApplicationCommandModule
         [SlashRequireOwner]
         public async Task CreateMedication(InteractionContext ctx, 
             [Option("Name", "The name of the Item")] string itemName,
-            [Option("Item_Type", ".")] Enums.ItemType itemType,
             [Option("Description", "Item description")] string itemDesc,
             [Option("Damage", "Damage points")] long itemDamage,
             [Option("Heal", "Heal points")] long itemHeal,
@@ -263,7 +258,7 @@ public class AdminSc : ApplicationCommandModule
             var medication = new Medication()
             {
                 Name = itemName,
-                ItemType = itemType,
+                ItemType = Enums.ItemType.Medication,
                 Description = itemDesc,
                 Heal = (int)itemHeal,
                 Damage = (int)itemDamage,

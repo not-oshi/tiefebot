@@ -106,6 +106,14 @@ public class TestSc : ApplicationCommandModule
             .AddEmbed(embed));
     }
 
+    [SlashCommand("Use_Weapon", "A command to use the Weapon")]
+    public async Task UseWeapon(InteractionContext ctx,
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)]
+        string weaponName)
+    {
+        // TODO: finish this
+    }
+
     [SlashCommand("Inspect_Item", "A command to inspect Items")]
     public async Task InspectItem(InteractionContext ctx,
         [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
@@ -120,15 +128,42 @@ public class TestSc : ApplicationCommandModule
     }
     
     
-    [SlashCommand("checktest", "1")]
-    public async Task Checktest(InteractionContext ctx,
-        [Autocomplete(typeof(CharactersCheck)), Option("test", "test", true)] string charName)
+    [SlashCommand("Transfer_Item", "A command to transfer Items")]
+    public async Task TransferItem(InteractionContext ctx,
+        [Autocomplete(typeof(CharactersCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string charName,
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
     {
-        await ctx.Interaction.CreateResponseAsync
-        (InteractionResponseType.ChannelMessageWithSource,
-            new DiscordInteractionResponseBuilder()
-                .WithContent("showing"));
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
+        
+        await using DataBase db = new DataBase();
+        
+        // Searching Sender Character
+        var sender = await db.Characters 
+            .Include(x => x.Inventory)
+            .ThenInclude(x => x.InvItems)
+            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
+        
+        // Searching Recipient Character
+        var recipient = await db.Characters
+            .Include(x => x.Inventory)
+            .ThenInclude(x => x.InvItems)
+            .FirstOrDefaultAsync(x => x.Name == charName);
+        
+        // Searching item in Sender inventory
+        var invItem = await db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Include(invItem => invItem.Item)
+            .FirstAsync(x => x.Item.Name == itemName);
+        
+        // Transfering item
+        invItem.InventoryId = recipient.Inventory.Id;
 
+        await db.SaveChangesAsync();
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent($"You gave item to {recipient.Name}"));
     }
     
     [SlashCommand("dice_test", "Check dice system")]

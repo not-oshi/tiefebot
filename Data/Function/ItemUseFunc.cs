@@ -90,7 +90,7 @@ public static class ItemUseFunc
                 };
                 embed.AddField
                 ("Stats", 
-                    $"**Weapon Type** - [{ammo.WeaponType}]" +
+                    $"**Weapon Type** - [{ammo.AmmoType}]" +
                     $"\n**Damage** - [{ammo.Damage}]" +
                     $"\n**Capacity** - [{ammo.Capacity}]",
                     inline: true);

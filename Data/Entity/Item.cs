@@ -1,6 +1,6 @@
 ﻿namespace tiefebot.Data.Entity;
 
-public class Item
+public abstract class Item
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
@@ -25,7 +25,7 @@ public class Weapon : Item
 
 public class Ammo : Item
 {
-    public Enums.WeaponType WeaponType { get; set; }
+    public Enums.WeaponType AmmoType { get; set; }
     public int Capacity { get; set; } //For guns and magazines
     public bool IsMagazine { get; set; }
 }
