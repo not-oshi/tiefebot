@@ -33,7 +33,7 @@ public class Ammo : Item
 public class Defence : Item
 {
     public int Protection { get; set; }
-    public bool IsWearable { get; set; } //TODO : need to add info in invitems
+    public bool IsWearable { get; set; } 
 }
 
 public class Medication : Item

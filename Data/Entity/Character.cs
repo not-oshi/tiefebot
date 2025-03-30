@@ -10,6 +10,7 @@ public class Character
     public Enums.CharType Type { get; set; }
     public int Level { get; set; } //Story-tale Level
     public int Personality { get; set; }
+    public int PersonalityLeft { get; set; }
     public int Empathy { get; set; }
     public int Intelligent { get; set; }
     public int Armor { get; set; }
