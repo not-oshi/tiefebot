@@ -28,7 +28,25 @@ public class Enums
 
     public enum WeaponType
     {
-        
+        [ChoiceName("Very_Lightweight_Melee")]
+        VeryLightweightMelee,
+        [ChoiceName("Lightweight_Melee")]
+        LightweightMelee,
+        [ChoiceName("Medium_Melee")]
+        MediumMelee,
+        [ChoiceName("Pistol")]
+        Pistol,
+        [ChoiceName("Revolver")]
+        Revolver,
+        [ChoiceName("Shotgun")]
+        Shotgun,
+        [ChoiceName("SMG")]
+        Smg,
+        [ChoiceName("Rifle")]
+        Rifle,
+        [ChoiceName("Mining_Laser")]
+        MiningLaser
+        //TODO: need to finish this
     }
     
     public enum Stats

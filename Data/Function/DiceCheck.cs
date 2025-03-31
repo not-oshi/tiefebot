@@ -18,6 +18,7 @@ public class Dice
 }
 
 public class DiceCheck
+// todo : make it looks nice
 {
     public static async Task<DiscordEmbed> CheckDice(long statNum)
     {

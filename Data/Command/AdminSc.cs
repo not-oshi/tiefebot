@@ -50,6 +50,7 @@ public class AdminSc : ApplicationCommandModule
             Type = charType,
             Level = (int)level,
             Personality = (int)personality,
+            PersonalityLeft = (int)personality,
             Empathy = (int)empathy,
             Intelligent = (int)intelligent,
             Armor = (int)armor,

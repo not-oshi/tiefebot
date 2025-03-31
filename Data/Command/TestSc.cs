@@ -1,4 +1,5 @@
-﻿using DSharpPlus;
+﻿using System.Reflection;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Microsoft.EntityFrameworkCore;
@@ -108,7 +109,7 @@ public class TestSc : ApplicationCommandModule
 
     [SlashCommand("Use_Weapon", "A command to use the Weapon")]
     public async Task UseWeapon(InteractionContext ctx,
-        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)]
+        [Autocomplete(typeof(InvWeaponCheck)), Option("Inventory_Item", "Select the item you want to use", true)]
         string weaponName)
     {
         // TODO: finish this
@@ -166,12 +167,26 @@ public class TestSc : ApplicationCommandModule
             .WithContent($"You gave item to {recipient.Name}"));
     }
     
-    [SlashCommand("dice_test", "Check dice system")]
+    [SlashCommand("Stat_Check", "Check any of your STATs for actions")]
     public async Task CheckTest(InteractionContext ctx,
-        [Option("Stat_Num", "Just a test")] long num)
+        [Option("STAT", "What stat you want to check?")] Enums.Stats statName)
     {
-        await ctx.DeferAsync();
-        var embed = await DiceCheck.CheckDice(num);
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder());
+        
+        await using DataBase db = new DataBase();
+        var character = await db.Characters 
+            .FirstOrDefaultAsync(x => x.MemberDiscordId == ctx.User.Id);
+
+        var stat = statName.GetName();
+        if (statName.GetName() == "Personality")
+            stat = "PersonalityLeft";
+        
+        var propertyInfo = typeof(Character).GetProperty(stat);
+        var value = propertyInfo.GetValue(character);
+        
+        var embed = await DiceCheck.CheckDice(value is int ? (int)value : 0);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
 }
