@@ -9,6 +9,7 @@ public class WeaponUseFunc
 {
     public static async Task<DiscordEmbed> WeaponUseFuncTask(InteractionContext ctx, string weaponName)
     {
+        Random random = new Random();
         await using DataBase db = new DataBase();
         DiscordEmbedBuilder embed = null;
 
@@ -20,37 +21,38 @@ public class WeaponUseFunc
 
         var weapon = invWeapon.Item as Weapon;
 
-        switch (weapon.WeaponType)
+        var numberOfDice = weapon.Damage / 10;
+        var sidesOfDice = weapon.Damage % 10;
+
+        int[] diceRolls = new int[numberOfDice];
+        string damageString = ""; // Строка для записи урона
+        int totalDamage = 0;
+
+        for (int rof = 1; rof <= weapon.ROF; rof++)
         {
-            case Enums.WeaponType.VeryLightweightMelee:
-                embed = new DiscordEmbedBuilder 
-                {
-                    Color = new DiscordColor(0x961515),
-                    Title = weapon.Name,
-                    Description = weapon.Description,
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
-                    {
-                        Url = "https://i.imgur.com/AfFp7pu.png"
-                    },
-                    Footer = new DiscordEmbedBuilder.EmbedFooter()
-                    {
-                        Text = weapon.ItemType.GetName() + $" | Is Disposable - {weapon.IsDisposable}"
-                    }
-                };
-                embed.AddField
-                ("Stats", 
-                    $"**Damage** - [{weapon.Name}]" +
-                    $"\n**Maximum quantity** - [{weapon.MaxStack}]",
-                    inline: true);
-        
-                embed.AddField
-                ("Usage", 
-                    $"[]", 
-                    inline: true);
-                break;
+            for (int i = 0; i < numberOfDice; i++)
+            {
+                diceRolls[i] = random.Next(1, sidesOfDice + 1);
+                totalDamage += diceRolls[i];
+                damageString += (i == 0) ? $"{diceRolls[i]}" : $" + {diceRolls[i]}";
+            }
+            // todo - remove this
+            Console.WriteLine($"{damageString} = {totalDamage}");
         }
         
+        embed = new DiscordEmbedBuilder 
+        {
+            Color = new DiscordColor(0x961515),
+            Title = weapon.Name,
+            Description = $"Damage - [{numberOfDice}d{sidesOfDice}] | Rate Of Fire - [{weapon.ROF}]" +
+                          $"\n {damageString} = {totalDamage}",
+            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail
+            {
+                Url = "https://i.imgur.com/AfFp7pu.png"
+            }
+        };
+        
         //TODO : finish this
-        return null;
+        return embed;
     }
 }

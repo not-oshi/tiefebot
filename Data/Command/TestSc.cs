@@ -112,7 +112,13 @@ public class TestSc : ApplicationCommandModule
         [Autocomplete(typeof(InvWeaponCheck)), Option("Inventory_Item", "Select the item you want to use", true)]
         string weaponName)
     {
-        // TODO: finish this
+        //Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder());
+
+        var embed = await WeaponUseFunc.WeaponUseFuncTask(ctx, weaponName);
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .AddEmbed(embed));
     }
 
     [SlashCommand("Inspect_Item", "A command to inspect Items")]
@@ -186,7 +192,7 @@ public class TestSc : ApplicationCommandModule
         var propertyInfo = typeof(Character).GetProperty(stat);
         var value = propertyInfo.GetValue(character);
         
-        var embed = await DiceCheck.CheckDice(value is int ? (int)value : 0);
+        var embed = await DiceCheck.CheckDice(value is int ? (int)value : 0, statName);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed));
     }    
 }

@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 
 namespace tiefebot.Data.Function;
 
@@ -18,9 +19,8 @@ public class Dice
 }
 
 public class DiceCheck
-// todo : make it looks nice
 {
-    public static async Task<DiscordEmbed> CheckDice(long statNum)
+    public static async Task<DiscordEmbed> CheckDice(long statNum, Enums.Stats statName)
     {
         Dice dice = new Dice();
         int result;
@@ -31,8 +31,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2;
             embed = new DiscordEmbedBuilder
             {
-                Title = "A mess!",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} = {result}" 
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check - A mess!",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} = **{result}**" 
             };
         }
         else if (dice.IsCriticalSuccess) 
@@ -40,8 +42,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2;
             embed = new DiscordEmbedBuilder
             {
-                Title = "Critical Success!",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} = {result}"
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check - Critical Success!",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} = **{result}**"
             };
         }
         else if (dice.IsCriticalFailure) 
@@ -49,8 +53,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2;
             embed = new DiscordEmbedBuilder
             {
-                Title = "Critical Failure!",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} = {result}"
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check - Critical Failure!",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} = **{result}**"
             };
         }
         else if (dice.IsLightFortune) 
@@ -58,8 +64,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2 + dice.DE;
             embed = new DiscordEmbedBuilder
             {
-                Title = "Light Fortune!",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} + {dice.DE} = {result}"
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check - Light Fortune!",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} + {dice.DE} = **{result}**"
             };
         }
         else if (dice.IsLightUnfortune) 
@@ -67,8 +75,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2 - dice.DE;
             embed = new DiscordEmbedBuilder
             {
-                Title = "Light Unfortune!",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} - {dice.DE} = {result}"
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check - Light Unfortune!",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} - {dice.DE} = **{result}**"
             };
         }
         else
@@ -77,8 +87,10 @@ public class DiceCheck
             result = (int)statNum + dice.D1 + dice.D2;
             embed = new DiscordEmbedBuilder
             {
-                Title = "Roll",
-                Description = $"{statNum} + {dice.D1} + {dice.D2} = {result}"
+                Color = new DiscordColor(0x961515),
+                Title = $"{statName.GetName()} Check",
+                Description = $"STAT + 2D6 ±4" +
+                              $"\n{statNum} + {dice.D1} + {dice.D2} = **{result}**"
             };
         }
 

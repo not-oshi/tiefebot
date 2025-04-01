@@ -17,7 +17,7 @@ public static class ItemUseFunc
             .SelectMany(x => x.Inventory.InvItems)
             .Include(invItem => invItem.Item)
             .FirstAsync(x => x.Item.Name == itemName);
-
+        
         switch (invItem.Item.ItemType)
         { 
             case Enums.ItemType.Tool:
