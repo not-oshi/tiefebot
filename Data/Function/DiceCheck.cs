@@ -94,6 +94,10 @@ public class DiceCheck
             };
         }
 
+        if (statName.GetName() == "Armor")
+        {
+            embed.Description += $"/2 => **{result/2}**";
+        }  
         return embed;
     }
 }

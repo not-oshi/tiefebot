@@ -25,7 +25,7 @@ public class WeaponUseFunc
         var sidesOfDice = weapon.Damage % 10;
 
         int[] diceRolls = new int[numberOfDice];
-        string damageString = ""; // Строка для записи урона
+        string damageString = "";
         int totalDamage = 0;
 
         for (int rof = 1; rof <= weapon.ROF; rof++)
@@ -34,11 +34,20 @@ public class WeaponUseFunc
             {
                 diceRolls[i] = random.Next(1, sidesOfDice + 1);
                 totalDamage += diceRolls[i];
-                damageString += (i == 0) ? $"{diceRolls[i]}" : $" + {diceRolls[i]}";
+                //damageString += (i == 0) ? $"{diceRolls[i]}" : $" + {diceRolls[i]}";
+                damageString += $"{diceRolls[i]}";
+                if (i < numberOfDice - 1) 
+                {
+                    damageString += " + ";
+                }
+                
             }
+
+            damageString += " + ";
             // todo - remove this
             Console.WriteLine($"{damageString} = {totalDamage}");
         }
+        damageString = damageString.TrimEnd(' ', '+');
         
         embed = new DiscordEmbedBuilder 
         {
