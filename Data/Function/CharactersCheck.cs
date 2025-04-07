@@ -10,7 +10,7 @@ public class CharactersCheck : IAutocompleteProvider
     {
         await using DataBase db = new DataBase();
         var choices = await db.Characters
-            .Select(x => new DiscordAutoCompleteChoice(x.Name.ToString(), x.Name.ToString()))
+            .Select(x => new DiscordAutoCompleteChoice(x.Name.ToString(), x.Id.ToString()))
             .ToListAsync();
         return choices;
     }

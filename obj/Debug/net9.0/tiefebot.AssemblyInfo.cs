@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("tiefebot")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a13f9641334c612939431924008ed13f40e511ce")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75e4dc114fc2096f42277d77553f0ee934aae937")]
 [assembly: System.Reflection.AssemblyProductAttribute("tiefebot")]
 [assembly: System.Reflection.AssemblyTitleAttribute("tiefebot")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

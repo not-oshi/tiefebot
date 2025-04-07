@@ -20,6 +20,8 @@ public class Enums
         Weapon,
         [ChoiceName("Ammo")]
         Ammo,
+        [ChoiceName("Magazine")]
+        Magazine,
         [ChoiceName("Defence")]
         Defence,
         [ChoiceName("Medication")]

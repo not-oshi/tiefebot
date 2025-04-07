@@ -10,7 +10,7 @@ public class ItemsCheck : IAutocompleteProvider
     {
         await using DataBase db = new DataBase();
         var items = await db.Items
-            .Select(x => new DiscordAutoCompleteChoice(x.Name.ToString(), x.Name))
+            .Select(x => new DiscordAutoCompleteChoice(x.Name, x.Id.ToString()))
             .ToListAsync();
         return items;
     }

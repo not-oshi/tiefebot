@@ -26,8 +26,12 @@ public class Weapon : Item
 public class Ammo : Item
 {
     public Enums.WeaponType AmmoType { get; set; }
-    public int Capacity { get; set; } //For guns and magazines
-    public bool IsMagazine { get; set; }
+}
+
+public class Magazine : Item
+{
+    public Enums.WeaponType MagazineType { get; set; }
+    public int Capacity { get; set; } 
 }
 
 public class Defence : Item

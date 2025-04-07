@@ -23,7 +23,7 @@ class Program
         Client.Ready += OnClientReady;
 
         var slashCommandsConfiguration = Client.UseSlashCommands();
-        slashCommandsConfiguration.RegisterCommands<TestSc>();
+        slashCommandsConfiguration.RegisterCommands<UserSc>();
         slashCommandsConfiguration.RegisterCommands<AdminSc>();
         
         SchedulerService schedulerService = new SchedulerService();

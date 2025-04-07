@@ -13,7 +13,7 @@ public class InvItemsCheck : IAutocompleteProvider
         var invItems = db.Characters
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
-            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.Item.Name))
+            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.Item.Id.ToString()))
             .ToList();
 
         return invItems;

@@ -13,7 +13,7 @@ public class InvWeaponCheck : IAutocompleteProvider
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
             .Where(x => x.Item.ItemType == Enums.ItemType.Weapon)
-            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.Item.Name))
+            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.Item.Id.ToString()))
             .ToList();
         
         return invWeapons;

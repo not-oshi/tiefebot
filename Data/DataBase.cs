@@ -1,4 +1,5 @@
 ﻿using System.Xml.Schema;
+using DSharpPlus.EventArgs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using tiefebot.Data.Entity;
@@ -73,6 +74,7 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasValue<Tool>(Enums.ItemType.Tool)
             .HasValue<Weapon>(Enums.ItemType.Weapon)
             .HasValue<Ammo>(Enums.ItemType.Ammo)
+            .HasValue<Magazine>(Enums.ItemType.Magazine)
             .HasValue<Defence>(Enums.ItemType.Defence)
             .HasValue<Medication>(Enums.ItemType.Medication);
     }

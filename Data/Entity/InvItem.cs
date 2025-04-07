@@ -10,5 +10,7 @@ public class InvItem
     public int Ammunition { get; set; }
     public int Durability { get; set; }
     public bool IsEquipped { get; set; } // It's for "IsWearable"
+    public bool IsLoaded { get; set; }
+    //todo not forget about this
     public int Quantity { get; set; }
 }

@@ -156,13 +156,50 @@ public class AdminSc : ApplicationCommandModule
         }
         
         [SlashCommand("Ammo", "Create a Ammo")]
+                 [SlashRequireOwner]
+                 public async Task CreateAmmo(InteractionContext ctx, 
+                     [Option("Name", "The name of the Item")] string itemName,
+                     [Option("Description", "Item description")] string itemDesc,
+                     [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemAmmoType,
+                     [Option("Damage", "Damage points")] long itemDamage,
+                     [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack,
+                     [Option("Disposable", "Is the item disposable")] bool isDisposable
+                 )
+                 {
+                     // Making delay
+                     await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+                         new DiscordInteractionResponseBuilder().AsEphemeral());
+                     
+                     // Creating a database connection
+                     await using DataBase db = new DataBase();
+                     
+                     // Applying stats
+                     var ammo = new Ammo()
+                     {
+                         Name = itemName,
+                         ItemType = Enums.ItemType.Ammo,
+                         Description = itemDesc,
+                         AmmoType = itemAmmoType,
+                         Damage = (int)itemDamage,
+                         MaxStack = (int)itemMaxStack,
+                         IsDisposable = isDisposable
+                     };
+                     
+                     // Adding item and saving db
+                     await db.Items.AddAsync(ammo);
+                     await db.SaveChangesAsync();
+                     // Confirming
+                     await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                         .WithContent("Creating done"));
+                 }
+                 
+        [SlashCommand("Magazine", "Create a Magazine")]
         [SlashRequireOwner]
-        public async Task CreateAmmo(InteractionContext ctx, 
+        public async Task CreateMagazine(InteractionContext ctx, 
             [Option("Name", "The name of the Item")] string itemName,
             [Option("Description", "Item description")] string itemDesc,
-            [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemAmmoType,
+            [Option("Weapon_Type", "What kind of weapon you want to create")] Enums.WeaponType itemMagazineType,
             [Option("Damage", "Damage points")] long itemDamage,
-            [Option("Magazine", "Is the item is magazine?")] bool isMagazine,
             [Option("Capacity", "(For Magazines) How much ammo it can store?")] long itemCapacity,
             [Option("Max_Stack", "Maximum number of items in one stack")] long itemMaxStack,
             [Option("Disposable", "Is the item disposable")] bool isDisposable
@@ -176,13 +213,12 @@ public class AdminSc : ApplicationCommandModule
             await using DataBase db = new DataBase();
             
             // Applying stats
-            var ammo = new Ammo()
+            var magazine = new Magazine()
             {
                 Name = itemName,
-                ItemType = Enums.ItemType.Ammo,
+                ItemType = Enums.ItemType.Magazine,
                 Description = itemDesc,
-                AmmoType = itemAmmoType,
-                IsMagazine = isMagazine,
+                MagazineType = itemMagazineType,
                 Capacity = (int)itemCapacity,
                 Damage = (int)itemDamage,
                 MaxStack = (int)itemMaxStack,
@@ -190,7 +226,7 @@ public class AdminSc : ApplicationCommandModule
             };
             
             // Adding item and saving db
-            await db.Items.AddAsync(ammo);
+            await db.Items.AddAsync(magazine);
             await db.SaveChangesAsync();
             // Confirming
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
@@ -280,7 +316,7 @@ public class AdminSc : ApplicationCommandModule
     [SlashRequireOwner]
     public async Task DeleteItem(InteractionContext ctx,
         [Autocomplete(typeof(ItemsCheck)), 
-         Option("Item", "Chose the Item", true)] string choosedItem)
+         Option("Item", "Chose the Item", true)] string choosedItemId)
     {
         // Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
@@ -289,7 +325,7 @@ public class AdminSc : ApplicationCommandModule
         await using DataBase db = new DataBase();
         
         // Searching choosed item
-        var item = await db.Items.FirstOrDefaultAsync(x => x.Name == choosedItem);
+        var item = await db.Items.FirstOrDefaultAsync(x => x.Id.ToString() == choosedItemId);
         
         // Deleting and applying
         db.Items.Remove(item);

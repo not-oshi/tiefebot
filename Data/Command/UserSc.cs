@@ -9,7 +9,7 @@ using tiefebot.Data.Function;
 
 namespace tiefebot.Data.Command;
 
-public class TestSc : ApplicationCommandModule
+public class UserSc : ApplicationCommandModule
 {
     
     [SlashCommand("whoareyou", "Will Send a full name of this Replica")]
@@ -24,7 +24,7 @@ public class TestSc : ApplicationCommandModule
     [SlashCommand("Get_Item", "A command to get the items")]
     public async Task GetItem(InteractionContext ctx,
         [Autocomplete(typeof(ItemsCheck)), 
-         Option("Item", "Chose the Item", true)] string choosedItem)
+         Option("Item", "Chose the Item", true)] string choosedItemId)
     {
         // Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
@@ -46,7 +46,7 @@ public class TestSc : ApplicationCommandModule
         }
         
         // Searching choosed item
-        var item = await db.Items.FirstOrDefaultAsync(x => x.Name == choosedItem);
+        var item = await db.Items.FirstOrDefaultAsync(x => x.Id.ToString() == choosedItemId);
         
         // Searching InventoryItem
         var inventoryItem = character.Inventory.InvItems
@@ -96,40 +96,40 @@ public class TestSc : ApplicationCommandModule
 
     [SlashCommand("Use_Item", "A command to use the Items")]
     public async Task UseItem(InteractionContext ctx,
-        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemId)
     {
         //Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
             new DiscordInteractionResponseBuilder());
         
-        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemName, false);
+        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemId, false);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder()
             .AddEmbed(embed));
     }
 
     [SlashCommand("Use_Weapon", "A command to use the Weapon")]
     public async Task UseWeapon(InteractionContext ctx,
-        [Autocomplete(typeof(InvWeaponCheck)), Option("Inventory_Item", "Select the item you want to use", true)]
-        string weaponName)
+        [Autocomplete(typeof(InvWeaponCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string weaponId,
+        [Option("Single_shot_mode", "Do you want to take a single shot?")] bool singleShotMode)
     {
         //Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
             new DiscordInteractionResponseBuilder());
 
-        var embed = await WeaponUseFunc.WeaponUseFuncTask(ctx, weaponName);
+        var embed = await WeaponUseFunc.WeaponUseFuncTask(ctx, weaponId, singleShotMode);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder()
             .AddEmbed(embed));
     }
 
     [SlashCommand("Inspect_Item", "A command to inspect Items")]
     public async Task InspectItem(InteractionContext ctx,
-        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemId)
     {
         //Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
             new DiscordInteractionResponseBuilder().AsEphemeral());
 
-        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemName, true);
+        var embed = await ItemUseFunc.ItemUseFuncTask(ctx, itemId, true);
         await ctx.EditResponseAsync(new DiscordWebhookBuilder()
             .AddEmbed(embed));
     }
@@ -137,8 +137,8 @@ public class TestSc : ApplicationCommandModule
     
     [SlashCommand("Transfer_Item", "A command to transfer Items")]
     public async Task TransferItem(InteractionContext ctx,
-        [Autocomplete(typeof(CharactersCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string charName,
-        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemName)
+        [Autocomplete(typeof(CharactersCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string charId,
+        [Autocomplete(typeof(InvItemsCheck)), Option("Inventory_Item", "Select the item you want to use", true)] string itemId)
     {
         // Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
@@ -156,14 +156,14 @@ public class TestSc : ApplicationCommandModule
         var recipient = await db.Characters
             .Include(x => x.Inventory)
             .ThenInclude(x => x.InvItems)
-            .FirstOrDefaultAsync(x => x.Name == charName);
+            .FirstOrDefaultAsync(x => x.Id.ToString() == charId);
         
         // Searching item in Sender inventory
         var invItem = await db.Characters
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
             .Include(invItem => invItem.Item)
-            .FirstAsync(x => x.Item.Name == itemName);
+            .FirstAsync(x => x.Item.Id.ToString() == itemId);
         
         // Transfering item
         invItem.InventoryId = recipient.Inventory.Id;
@@ -171,6 +171,18 @@ public class TestSc : ApplicationCommandModule
         await db.SaveChangesAsync();
         await ctx.EditResponseAsync(new DiscordWebhookBuilder()
             .WithContent($"You gave item to {recipient.Name}"));
+    }
+
+    [SlashCommand("Load_Magazine", "A command to Load the magazine")]
+    public async Task LoadMagazine(InteractionContext ctx,
+        [Autocomplete(typeof(MagazineCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string ammoName)
+    {
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder().AsEphemeral());
+        // todo finish this command
+        await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+            .WithContent(ammoName));
     }
     
     [SlashCommand("Stat_Check", "Check any of your STATs for actions")]
