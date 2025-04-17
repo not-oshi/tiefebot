@@ -25,7 +25,7 @@ public class DataBase : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Data Source=tiefebot.db");
-        optionsBuilder.LogTo(Console.WriteLine);
+        //optionsBuilder.LogTo(Console.WriteLine);
     }
 }
 

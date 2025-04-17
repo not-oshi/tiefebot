@@ -5,7 +5,7 @@ using tiefebot.Data.Entity;
 
 namespace tiefebot.Data.Function;
 
-public class MagazineCheck : IAutocompleteProvider
+public class AmmoCheck : IAutocompleteProvider
 {
     public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
     {
@@ -14,17 +14,14 @@ public class MagazineCheck : IAutocompleteProvider
         var inventoryItems = db.Characters
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
-            .Where(x => x.Item is Magazine)
+            .Where(x => x.Item is Ammo)
             .Include(invItem => invItem.Item)
             .ToList();
         
-        var invAmmos = inventoryItems
-            .Select(x =>
-                new DiscordAutoCompleteChoice(
-                    $"{x.Item.Name} [{x.Ammunition}/{(x.Item is Magazine magazine ? magazine.Capacity : 0)}]",
-                    x.ItemId.ToString()))
+        var invBullets = inventoryItems
+            .Select(x => new DiscordAutoCompleteChoice(x.Item.Name, x.ItemId.ToString()))
             .ToList();
         
-        return invAmmos;
+        return invBullets;
     }
 }

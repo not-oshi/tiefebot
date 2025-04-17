@@ -28,12 +28,14 @@ public class WeaponUseFunc
                    weaponType == Enums.WeaponType.Rifle;
         }
 
+        Guid.TryParse(weaponId, out Guid weaponGuid);
+        
         // Query the database to find the weapon in the user's inventory by name.
         var invWeapon = await db.Characters
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
             .Include(invWeapon => invWeapon.Item)
-            .FirstAsync(x => x.Item.Id.ToString() == weaponId);
+            .FirstAsync(x => x.Item.Id == weaponGuid);
 
         // Cast the retrieved item to the Weapon type.
         var weapon = invWeapon.Item as Weapon;

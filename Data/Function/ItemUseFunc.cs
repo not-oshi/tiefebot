@@ -15,12 +15,14 @@ public static class ItemUseFunc
         // DiscordEmbedBuilder object to structure the embed response.
         DiscordEmbedBuilder embed = null;
 
+        Guid.TryParse(itemId, out Guid itemGuid);
+        
         // Query the database to find the specified item in the user's inventory.
         var invItem = await db.Characters
             .Where(x => x.MemberDiscordId == ctx.User.Id)
             .SelectMany(x => x.Inventory.InvItems)
             .Include(invItem => invItem.Item)
-            .FirstAsync(x => x.Item.Id.ToString() == itemId);
+            .FirstAsync(x => x.Item.Id == itemGuid);
         
         // Handle different item types using a switch statement.
         switch (invItem.Item.ItemType)

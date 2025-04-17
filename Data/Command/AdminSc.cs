@@ -324,8 +324,10 @@ public class AdminSc : ApplicationCommandModule
         
         await using DataBase db = new DataBase();
         
+        Guid.TryParse(choosedItemId, out Guid itemGuid);
+        
         // Searching choosed item
-        var item = await db.Items.FirstOrDefaultAsync(x => x.Id.ToString() == choosedItemId);
+        var item = await db.Items.FirstOrDefaultAsync(x => x.Id == itemGuid);
         
         // Deleting and applying
         db.Items.Remove(item);
