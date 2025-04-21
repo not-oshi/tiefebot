@@ -11,6 +11,6 @@ public class InvItem
     public int Durability { get; set; }
     public bool IsEquipped { get; set; } // It's for "IsWearable"
     public bool IsLoaded { get; set; }
-    //todo not forget about this
+    public Guid LoadedMagGuid { get; set; }
     public int Quantity { get; set; }
 }

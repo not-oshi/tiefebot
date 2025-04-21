@@ -181,8 +181,8 @@ public class UserSc : ApplicationCommandModule
 
     [SlashCommand("Load_Magazine", "A command to Load the magazine")]
     public async Task LoadMagazine(InteractionContext ctx, 
-        [Autocomplete(typeof(MagazineCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string magazineId,
-        [Autocomplete(typeof(AmmoCheck)), Option("Recipient2", "The character you want to transfer the item to", true)] string ammoId,
+        [Autocomplete(typeof(MagazineCheck)), Option("Magazine", "What Magazine you want to load", true)] string magazineId,
+        [Autocomplete(typeof(AmmoCheck)), Option("Ammo", "What ammo you want to use", true)] string ammoId,
         [Option("Amount", "How much ammo you want to load?")] long amount)
     {
         // Making delay
@@ -256,17 +256,30 @@ public class UserSc : ApplicationCommandModule
             .WithContent("Loading completed successfully"));
     }
 
-    [SlashCommand("Reload_Gun", "A command to Load/Reload Gun")]
-    public async Task ReloadGun(InteractionContext ctx,
-        [Autocomplete(typeof(MagazineCheck)), Option("Recipient", "The character you want to transfer the item to", true)] string magazineId,
-        [Autocomplete(typeof(AmmoCheck)), Option("Recipient2", "The character you want to transfer the item to", true)] string ammoId)
+    [SlashCommand("load_Gun", "A command to Load Gun")]
+    public async Task LoadGun(InteractionContext ctx,
+        [Autocomplete(typeof(WeaponCheck)), Option("Gun", "What gun you want to load", true)] string weaponId,
+        [Autocomplete(typeof(MagazineCheck)), Option("Magazine", "What Magazine you want to load", true)] string magazineId)
     {
+        // todo test this command
         // Making delay
         await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
             new DiscordInteractionResponseBuilder());
         
         // Initializing the database context
         await using DataBase db = new DataBase();
+        
+        Guid.TryParse(weaponId, out Guid weaponGuid);
+        
+        // Searching for the inventory item corresponding to the specified weapon ID
+        var invWeapon = await db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Include(invWeapon => invWeapon.Item)
+            .FirstAsync(x => x.Item.Id == weaponGuid);
+
+        // Casting the item to the Weapon type
+        var weapon = invWeapon.Item as Weapon;
         
         Guid.TryParse(magazineId, out Guid magGuid);
         
@@ -279,28 +292,94 @@ public class UserSc : ApplicationCommandModule
 
         // Casting the item to the Magazine type
         var magazine = invMagazine.Item as Magazine;
-        
-        Guid.TryParse(ammoId, out Guid ammoGuid);
-        
-        // Searching for the inventory item corresponding to the specified ammo ID
-        var invAmmo = await db.Characters
-            .Where(x => x.MemberDiscordId == ctx.User.Id)
-            .SelectMany(x => x.Inventory.InvItems)
-            .Include(invWeapon => invWeapon.Item)
-            .FirstAsync(x => x.Item.Id == ammoGuid);
-
-        // Casting the item to the Ammo type
-        var ammo = invAmmo.Item as Ammo;
 
         // Checking if the ammo type matches the magazine type
-        if (magazine.MagazineType != ammo.AmmoType)
+        if (magazine.MagazineType != weapon.WeaponType)
         {
             await ctx.EditResponseAsync(new DiscordWebhookBuilder()
                 .WithContent("wrong type"));
             return;
         }
+
+        // Check if the weapon already has a magazine loaded
+        if (invWeapon.IsLoaded)
+        {
+            // If yes, send a response indicating that the weapon already has a magazine
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+                .WithContent("weapon already has a mag"));
+            // Exit the method early since no further action is needed
+            return;
+        }
+
+        // Mark the weapon as loaded (i.e., it now has a magazine)
+        invWeapon.IsLoaded = true;
+
+        // Transfer the ammunition available in the magazine to the weapon
+        invWeapon.Ammunition = invMagazine.Ammunition;
+
+        // Adding id of Mag for future unloading
+        invWeapon.LoadedMagGuid = invMagazine.Item.Id;
+
+        // Remove the magazine from inventory as it has been inserted into the weapon
+        db.Remove(invMagazine);
+
+        // Save the changes to the database asynchronously
+        await db.SaveChangesAsync();
+    }
+    
+    [SlashCommand("Unload_Gun", "A command to Load Gun")]
+    public async Task UnloadGun(InteractionContext ctx,
+        [Autocomplete(typeof(WeaponCheck)), Option("Gun", "What gun you want to Unload", true)] string weaponId)
+    {
+        // todo test this command
+        // Making delay
+        await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, 
+            new DiscordInteractionResponseBuilder());
         
-        
+        // Create a new instance of the database context with async disposal
+        await using DataBase db = new DataBase();
+
+        // Attempt to parse the provided weaponId string into a Guid value stored in weaponGuid
+        Guid.TryParse(weaponId, out Guid weaponGuid);
+
+        // Query the database to find the inventory item corresponding to the weapon:
+        var invWeapon = await db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Include(invWeapon => invWeapon.Item)
+            .FirstAsync(x => x.Item.Id == weaponGuid);
+
+        // Cast the Item property of the inventory weapon to the Weapon type
+        var weapon = invWeapon.Item as Weapon;
+
+        // Query the database to find the inventory item corresponding to the loaded magazine:
+        var invMagazine = await db.Characters
+            .Where(x => x.MemberDiscordId == ctx.User.Id)
+            .SelectMany(x => x.Inventory.InvItems)
+            .Include(invWeapon => invWeapon.Item)
+            .FirstAsync(x => x.Item.Id == invWeapon.LoadedMagGuid);
+
+        // Cast the Item property of the magazine inventory item to the Magazine type
+        var magazine = invMagazine.Item as Magazine;
+
+        // Check if the weapon is already unloaded (i.e., IsLoaded is false)
+        if (invWeapon.IsLoaded == false)
+        {
+         // Inform the user via a Discord webhook response that the weapon is already unloaded
+            await ctx.EditResponseAsync(new DiscordWebhookBuilder()
+               .WithContent("weapon already unloaded"));
+            // Exit the method early, as no further processing is required
+         return;
+        }
+
+        // Set the weapon's loaded state to false (i.e., unload the weapon)
+        invWeapon.IsLoaded = false;
+
+        // Add the magazine inventory item back to the database context, re-inserting it into the inventory
+        await db.AddAsync(invMagazine);
+
+        // Persist all changes (unloading the weapon and re-adding the magazine) to the database asynchronously
+        await db.SaveChangesAsync();
     }
     
     [SlashCommand("Stat_Check", "Check any of your STATs for actions")]
